@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Beckn Subscriber Reference",
+    "description": "A registry entry describing reference to subscription details (either whole registries or single records) created by NFOs.",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "subscriber_id": {
+            "type": "string",
+            "description": "Globally unique identifier of the platform, typically an FQDN."
+        },
+        "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Specifies the DeDi lookup URL pointing to another record/registry created using the schema beckn-subscriber."
+        },
+        "type": {
+            "type": "string",
+            "description": "Whether the entry is referencing a Record or a Registry.",
+            "enum": ["Registry", "Record"]
+        }
+    },
+    "required": ["subscriber_id", "url", "type"]
+}

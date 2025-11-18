@@ -1,49 +1,55 @@
 {
-  "$id": "https://dedi.global/public_key.json",
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "title": "Public Key Directory",
-  "description": "This schema is used to get public key details from the public directory for a given entity",
-  "type": "object",
-  "properties": {
-    "id": {
-      "type": "string",
-      "description": "Unique ID of the entity"
+    "$id": "https://dedi.global/public_key.json",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Public Key Directory",
+    "description": "This schema is used to get public key details from the public directory for a given entity",
+    "type": "object",
+    "properties": {
+	"public_key_id": {
+	    "type": "string",
+	    "description": "Unique ID of the entity"
+	},
+	"publicKey": {
+	    "type": "string",
+	    "description": "currently active public key"
+	},
+	"keyType": {
+	    "type": "string",
+	    "description": "RSA2048, Edcsa, ed25519"
+	},
+	"keyFormat": {
+	    "type": "string",
+	    "description": "base58, base64, hex, x.509 etc etc"
+	},
+	"entity": {
+	    "type": "object",
+	    "description": "Public details of the entity",
+	    "properties": {
+		"name": { "type": "string" },
+		"url": { "type": "string", "format": "url"},
+		"address": { "type": "string" }
+	    },
+	    "required": ["name"],
+	    "additionalProperties": true
+	},
+	"previousKeys": {
+	    "type": "array",
+	    "items": {
+		"type": "object",
+		"properties": {
+		    "publicKey": {
+			"type": "string"
+		    },
+		    "keyType": {
+			"type": "string"
+		    },
+		    "keyFormat": {
+			"type": "string"
+		    }
+		},
+		"additionalProperties": true
+	    }
+	}
     },
-    "publicKey": {
-      "type": "string",
-      "description": "currently active public key"
-    },
-    "keyType": {
-      "type": "string",
-      "description": "RSA2048, Edcsa, ed25519"
-    },
-    "keyFormat": {
-      "type": "string",
-      "description": "base58, base64, hex, x.509 etc etc"
-    },
-    "entity": {
-      "type": "object",
-      "description": "Public details of the entity",
-      "properties": {
-        "name": { "type": "string" },
-        "url": { "type": "string", "format": "uri" },
-        "address": { "type": "string" }
-      },
-      "required": ["name"],
-      "additionalProperties": true
-    },
-    "previousKeys": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "publicKey": { "type": "string" },
-          "keyType": { "type": "string" },
-          "keyFormat": { "type": "string" }
-        },
-        "additionalProperties": true
-      }
-    }
-  },
-  "required": ["id", "publicKey", "keyType"]
+    "required": [ "public_key_id", "publicKey", "keyType"]
 }

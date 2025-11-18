@@ -5,7 +5,7 @@
   "description": "Revocation List. This schema is used to represent anything which is revoked/blacklisted aka, negative list. Examples are blacklisted entities in a country, no-fly list, list of credentials revoked from the issuance in an university",
   "type": "object",
   "properties": {
-    "id": {
+    "revoked_id": {
       "type": "string",
       "description": "Unique ID which is getting revoked"
     },
@@ -14,5 +14,5 @@
       "type": "string"
     }
   },
-  "required": ["id"]
+  "required": ["revoked_id"]
 }

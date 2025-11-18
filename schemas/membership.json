@@ -1,37 +1,40 @@
 {
-    "$id": "https://dedi.global/membership.json",
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "description": "Membership. This schema is used to establish membership of person/entity to a club, an entity in a larger consortium, or even can be citizenship of a country. Think of this as 'Affiliation'",
-    "type": "object",
-    "properties": {
-	"id": {
-	    "type": "string",
-	    "description": "Unique membership ID"
-	},
-	"detail": {
-	    "type": "object",
-	    "description": "Public details of the member",
-	    "properties": {
-		"name": { "type": "string" },
-		"url": { "type": "string", "format": "uri"},
-		"address": { "type": "string" },
-		"publicKey": { "type": "string", "description": "this can be a url/uri pointing to DeDi public key registry entry, or even DID" }
-	    },
-	    "required": ["name"],
-	    "additionalProperties": true,
-	},
-	"evidence": {
-	    "description": "Evidence of membership (if any). Can be URL also",
-	    "type": "string"
-	},
-	"memberSince": {
-	    "type": "string",
-	    "format": "date"
-	},
-	"memberTill": {
-	    "type": "string",
-	    "format": "date"
-	}
+  "$id": "https://dedi.global/membership.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "description": "Membership. This schema is used to establish membership of person/entity to a club, an entity in a larger consortium, or even can be citizenship of a country. Think of this as 'Affiliation'",
+  "type": "object",
+  "properties": {
+    "membership_id": {
+      "type": "string",
+      "description": "Unique membership ID"
     },
-    "required": [ "id", "detail"]
+    "detail": {
+      "type": "object",
+      "description": "Public details of the member",
+      "properties": {
+        "name": { "type": "string" },
+        "url": { "type": "string", "format": "url" },
+        "address": { "type": "string" },
+        "publicKey": {
+          "type": "string",
+          "description": "this can be a url/uri pointing to DeDi public key registry entry, or even DID"
+        }
+      },
+      "required": ["name"],
+      "additionalProperties": true
+    },
+    "evidence": {
+      "description": "Evidence of membership (if any). Can be URL also",
+      "type": "string"
+    },
+    "memberSince": {
+      "type": "string",
+      "format": "date"
+    },
+    "memberTill": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": ["membership_id", "detail"]
 }

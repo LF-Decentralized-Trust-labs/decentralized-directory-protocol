@@ -1,0 +1,2544 @@
+{
+	"info": {
+		"_postman_id": "a55f8089-550d-4db3-a25f-cf628894be15",
+		"name": "DeDi API Collection",
+		"description": "Complete DeDi API collection with dual authentication support (Cookie + API Key).",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27224718"
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// 🔐 DeDi API Collection - Dual Authentication Handler",
+					"// This script automatically handles both Cookie and API Key authentication",
+					"",
+					"const apiKey = pm.collectionVariables.get('api_key');",
+					"const authCookie = pm.collectionVariables.get('auth_cookie');",
+					"",
+					"// Priority: API Key > Cookie",
+					"if (apiKey && apiKey !== '' && !apiKey.includes('paste-your-api-key')) {",
+					"  // Use API Key authentication (recommended for production)",
+					"  pm.request.headers.upsert({",
+					"    key: 'Authorization',",
+					"    value: `Bearer ${apiKey}`",
+					"  });",
+					"  // Remove cookie header if present",
+					"  pm.request.headers.remove('Cookie');",
+					"} else if (authCookie && authCookie !== '' && !authCookie.includes('paste-your-token')) {",
+					"  // Use Cookie authentication (for browser integration)",
+					"  pm.request.headers.upsert({",
+					"    key: 'Cookie',",
+					"    value: `token=${authCookie}`",
+					"  });",
+					"  // Remove Authorization header if present",
+					"  pm.request.headers.remove('Authorization');",
+					"} else {",
+					"  // No authentication configured - endpoints may fail if auth is required",
+					"  pm.request.headers.remove('Authorization');",
+					"  pm.request.headers.remove('Cookie');",
+					"}"
+				]
+			}
+		}
+	],
+	"item": [
+		{
+			"name": "🔧 Setup",
+			"item": [
+				{
+					"name": "🔧 Authentication Setup Helper",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// DeDi API Authentication Setup Helper",
+									"console.log('� DEDI AUTHENTICATION SETUP');",
+									"console.log('=========================================');",
+									"console.log('');",
+									"console.log('🎯 DeDi supports TWO authentication methods:');",
+									"console.log('');",
+									"console.log('📌 METHOD 1: API KEY (Recommended for Production)');",
+									"console.log('1. ✉️  Register using the \"register/login\" endpoint');",
+									"console.log('2. 📧 Verify your email by clicking the magic link');",
+									"console.log('3. 🔑 Use \"get-api-key\" endpoint to generate your API key');",
+									"console.log('4. 🔧 Set \"api_key\" collection variable with the generated key');",
+									"console.log('5. ✅ All authenticated requests will use Bearer token automatically!');",
+									"console.log('');",
+									"console.log('📌 METHOD 2: COOKIE AUTHENTICATION (Browser Integration)');",
+									"console.log('1. ✉️  Register and verify email (same as Method 1)');",
+									"console.log('2. 🌐 Open browser DevTools (F12) after email verification');",
+									"console.log('3. 🍪 Go to: Application → Cookies → Copy \"token\" cookie value');",
+									"console.log('4. 🔧 Set \"auth_cookie\" collection variable with cookie value');",
+									"console.log('5. ✅ Requests will use cookie authentication automatically!');",
+									"console.log('');",
+									"console.log('💡 PRODUCTION TIP: Use API Key method for server-to-server integration');",
+									"console.log('💡 DEVELOPMENT TIP: Use Cookie method for browser-based testing');",
+									"console.log('');",
+									"",
+									"// Check authentication status",
+									"const apiKey = pm.collectionVariables.get('api_key');",
+									"const authCookie = pm.collectionVariables.get('auth_cookie');",
+									"",
+									"if (apiKey && apiKey !== '' && !apiKey.includes('paste-your-api-key')) {",
+									"  console.log('✅ API Key Authentication: CONFIGURED');",
+									"  console.log('🎉 Ready for production integration!');",
+									"} else if (authCookie && authCookie !== '' && !authCookie.includes('paste-your-token')) {",
+									"  console.log('✅ Cookie Authentication: CONFIGURED');",
+									"  console.log('🎉 Ready for development testing!');",
+									"} else {",
+									"  console.log('❌ Authentication: NOT CONFIGURED');",
+									"  console.log('🔧 Action: Choose and configure one of the methods above');",
+									"}",
+									"",
+									"console.log('');",
+									"console.log('📚 API Documentation: https://docs.dedi.global');",
+									"",
+									"// This is a helper - skip actual request",
+									"pm.test.skip();"
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"// This is a helper endpoint - no actual test needed",
+									"pm.test('Setup Helper Completed', function() {",
+									"  pm.expect(true).to.be.true;",
+									"});",
+									"",
+									"console.log('');",
+									"console.log('🎯 NEXT STEPS:');",
+									"console.log('- If auth is not configured: Follow the setup steps above');",
+									"console.log('- If auth is configured: You can now use any authenticated endpoint!');",
+									"console.log('- Start with \"getCurrentUser\" to test your authentication');"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/dedi",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"dedi"
+							]
+						},
+						"description": "🔧 AUTHENTICATION SETUP HELPER\n\nThis endpoint helps you set up authentication for the entire collection.\n\n**IMPORTANT:** After running this, check the Console tab for detailed setup instructions.\n\n**Quick Setup:**\n1. Register using the 'register/login' endpoint\n2. Click email verification link\n3. Copy 'token' cookie from browser DevTools\n4. Set it as 'auth_cookie' in Collection Variables\n5. All authenticated endpoints will work automatically!\n\n**This endpoint calls the health check API to verify your connection.**"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "🔐 Authentication",
+			"item": [
+				{
+					"name": "register/login",
+			"event": [
+					{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"if (!pm.variables.get(\"user_email\")) {",
+						"  pm.variables.set(\"user_email\", \"testuser@yourdomain.com\");",
+						"}",
+						"if (!pm.variables.get(\"user_name\")) {",
+						"  pm.variables.set(\"user_name\", \"TestUser\");",
+						"}",
+						"if (!pm.variables.get(\"user_action\")) {",
+						"  pm.variables.set(\"user_action\", \"register\");",
+						"}"
+						]
+					}
+					},
+					{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"pm.test(\"Status code is 201 or 400\", function () {",
+						"  pm.expect(pm.response.code).to.be.oneOf([201, 400]);",
+						"});",
+						"pm.test(\"Response has message\", function () {",
+						"  pm.expect(pm.response.json()).to.have.property(\"message\");",
+						"});"
+						]
+					}
+					}
+				],
+				"request": {
+					"auth": {
+					"type": "noauth"
+					},
+					"method": "POST",
+					"header": [],
+					"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"{{user_email}}\",\n  \"name\": \"{{user_name}}\",\n  \"action\": \"{{user_action}}\"\n}",
+					"options": {
+						"raw": {
+						"language": "json"
+						}
+					}
+					},
+					"url": {
+					"raw": "{{url}}/dedi/register",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"dedi",
+						"register"
+					]
+					},
+					"description": "Use 'action' as 'register' or 'login'. 'name' is required for register, not for login."
+				},
+				"response": []
+			},
+		{
+			"name": "verify-email",
+			"event": [
+				{
+				"listen": "prerequest",
+				"script": {
+					"type": "text/javascript",
+					"exec": [
+					"// Set a dummy token for testing if not present",
+					"if (!pm.variables.get(\"email_verification_token\")) {",
+					"  pm.variables.set(\"email_verification_token\", \"<paste-a-valid-token-here>\");",
+					"}"
+					]
+				}
+				},
+				{
+				"listen": "test",
+				"script": {
+					"type": "text/javascript",
+					"exec": [
+					"pm.test(\"Redirect or error handled\", function () {",
+					"  pm.expect(pm.response.code).to.be.oneOf([200, 302, 400]);",
+					"});"
+					]
+				}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+				"raw": "{{url}}/dedi/verify-email?token={{email_verification_token}}",
+				"host": [
+					"{{url}}"
+				],
+				"path": [
+					"dedi",
+					"verify-email"
+				],
+				"query": [
+					{
+					"key": "token",
+					"value": "{{email_verification_token}}"
+					}
+				]
+				},
+				"description": "Verifies the email using the magic link token. Set 'email_verification_token' variable after registration."
+			},
+				"response": []
+			},
+			{
+				"name": "get-current-user",
+			"event": [
+				{
+				"listen": "prerequest",
+				"script": {
+					"type": "text/javascript",
+					"exec": [
+					"// ✅ Authentication is handled automatically by the global collection script",
+					"// This endpoint requires authentication - the global script will apply the cookie",
+					"",
+					"// One-time setup helper: Check if auth cookie is configured",
+					"const authCookie = pm.collectionVariables.get('auth_cookie');",
+					"if (!authCookie || authCookie === '' || authCookie === '<paste-your-token-cookie-here>') {",
+					"  console.warn('🔧 SETUP REQUIRED: Configure auth_cookie in Collection Variables');",
+					"  console.warn('📋 Steps: Register → Email Verification → Copy token cookie → Set Collection Variable');",
+					"}"
+					]
+				}
+				},
+				{
+				"listen": "test",
+				"script": {
+					"type": "text/javascript",
+					"exec": [
+					"pm.test(\"Status code is 200 or 401\", function () {",
+					"  pm.expect(pm.response.code).to.be.oneOf([200, 401]);",
+					"});",
+					"pm.test(\"Response has user details or error message\", function () {",
+					"  const res = pm.response.json();",
+					"  if (pm.response.code === 200) {",
+					"    pm.expect(res).to.have.property(\"access_token\");",
+					"    pm.expect(res).to.have.property(\"id\");",
+					"    pm.expect(res).to.have.property(\"email\");",
+					"    pm.expect(res).to.have.property(\"email_verified\");",
+					"    pm.expect(res).to.have.property(\"profile_id\");",
+					"  } else {",
+					"    pm.expect(res).to.have.property(\"message\");",
+					"  }",
+					"});"
+					]
+				}
+				}
+			],
+			"request": {
+				"auth": {
+				"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+				"raw": "{{url}}/dedi/auth/me",
+				"host": [
+					"{{url}}"
+				],
+				"path": [
+					"dedi",
+					"auth",
+					"me"
+				]
+				},
+				"description": "Fetches the current authenticated user's details. Requires authentication via cookie. After login/verification, copy the 'token' cookie from your browser and paste it into the 'auth_cookie' variable in Postman. This endpoint returns user details if authenticated, or an error message if not."
+			},
+				"response": []
+			},
+			{
+			"name": "refresh-token",
+			"event": [
+				{
+				"listen": "prerequest",
+				"script": {
+					"type": "text/javascript",
+					"exec": [
+					"// ✅ Authentication is handled automatically by the collection script",
+					"// Ensure refresh_token is set for testing",
+					"if (!pm.collectionVariables.get(\"refresh_token\")) {",
+					"  pm.collectionVariables.set(\"refresh_token\", \"<paste-your-refresh-token-here>\");",
+					"}"
+					]
+				}
+				},
+				{
+				"listen": "test",
+				"script": {
+					"type": "text/javascript",
+					"exec": [
+					"pm.test(\"Status code is 200 or 401\", function () {",
+					"  pm.expect(pm.response.code).to.be.oneOf([200, 401]);",
+					"});",
+					"pm.test(\"Response has message\", function () {",
+					"  pm.expect(pm.response.json()).to.have.property(\"message\");",
+					"});"
+					]
+				}
+				}
+			],
+			"request": {
+				"auth": {
+				"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+				"mode": "raw",
+				"raw": "{\n    \"refresh_token\": \"{{refresh_token}}\"\n}",
+				"options": {
+					"raw": {
+					"language": "json"
+					}
+				}
+				},
+				"url": {
+				"raw": "{{url}}/dedi/token/refresh",
+				"host": [
+					"{{url}}"
+				],
+				"path": [
+					"dedi",
+					"token",
+					"refresh"
+				]
+				},
+				"description": "🔄 REFRESH ACCESS TOKEN\n\nRefreshes an expired access token using a valid refresh token.\n\n**Authentication:** Required (existing valid session)\n\n**Request Body:**\n- `refresh_token`: Valid refresh token obtained during login\n\n**Response:**\n- New access token and refresh token pair\n- Updated session information\n\n**Use Cases:**\n- Maintaining session without re-authentication\n- Automatic token renewal in applications\n- Session management in long-running processes"
+			},
+				"response": []
+			},
+			{
+			"name": "logout",
+			"event": [
+				{
+				"listen": "prerequest",
+				"script": {
+					"type": "text/javascript",
+					"exec": [
+					"// ✅ Authentication is handled automatically by the global collection script"
+					]
+				}
+				},
+				{
+				"listen": "test",
+				"script": {
+					"type": "text/javascript",
+					"exec": [
+					"pm.test(\"Status code is 200 or 401\", function () {",
+					"  pm.expect(pm.response.code).to.be.oneOf([200, 401]);",
+					"});",
+					"pm.test(\"Response has message\", function () {",
+					"  pm.expect(pm.response.json()).to.have.property(\"message\");",
+					"});"
+					]
+				}
+				}
+			],
+			"request": {
+				"auth": {
+				"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+				"mode": "raw",
+				"raw": "",
+				"options": {
+					"raw": {
+					"language": "json"
+					}
+				}
+				},
+				"url": {
+				"raw": "{{url}}/dedi/logout",
+				"host": [
+					"{{url}}"
+				],
+				"path": [
+					"dedi",
+					"logout"
+				]
+				},
+				"description": "Requires authentication via cookie. After login/verification, copy the 'token' cookie from your browser and paste it into the 'auth_cookie' variable in Postman. This endpoint logs out the user and clears the authentication cookie."
+			},
+			"response": []
+			},
+			{
+				"name": "get-api-key",
+				"event": [
+					{
+						"listen": "prerequest",
+						"script": {
+							"type": "text/javascript",
+							"exec": [
+								"// ✅ Authentication is handled automatically by the global collection script",
+								"// This endpoint requires authentication - use either cookie or existing API key",
+								""
+							]
+						}
+					},
+					{
+						"listen": "test",
+						"script": {
+							"type": "text/javascript",
+							"exec": [
+								"pm.test(\"Status code is 200 or 401\", function () {",
+								"  pm.expect(pm.response.code).to.be.oneOf([200, 401]);",
+								"});",
+								"pm.test(\"Response has API key or error message\", function () {",
+								"  const res = pm.response.json();",
+								"  if (pm.response.code === 200) {",
+								"    pm.expect(res).to.have.property(\"data\");",
+								"    pm.expect(res.data).to.have.property(\"access_token\");",
+								"    // Auto-set the API key for future requests",
+								"    pm.collectionVariables.set(\"api_key\", res.data.access_token);",
+								"    console.log('✅ API Key generated and saved to collection variables!');",
+								"    console.log('🎉 You can now use API key authentication for all requests!');",
+								"  } else {",
+								"    pm.expect(res).to.have.property(\"message\");",
+								"  }",
+								"});"
+							]
+						}
+					}
+				],
+				"request": {
+					"auth": {
+						"type": "noauth"
+					},
+					"method": "GET",
+					"header": [],
+					"url": {
+						"raw": "{{url}}/dedi/get-api-key",
+						"host": [
+							"{{url}}"
+						],
+						"path": [
+							"dedi",
+							"get-api-key"
+						]
+					},
+					"description": "🔑 GENERATE API KEY\n\nGenerates an API key for programmatic access to DeDi APIs. This is the recommended authentication method for production integrations.\n\n**Prerequisites:**\n- User must be registered and email verified\n- Must be authenticated (cookie or existing API key)\n\n**Response:**\n- Returns `access_token` that can be used as Bearer token\n- API key is automatically saved to collection variables\n\n**Usage:**\n- Set the returned `access_token` as `api_key` collection variable\n- All subsequent requests will use Bearer token authentication\n- No need to manage cookies or browser sessions"
+				},
+				"response": []
+			}
+			]
+		},
+		{
+			"name": "publish",
+			"item": [
+				{
+				"name": "create namespace",
+				"event": [
+					{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"// ✅ Authentication is handled automatically by the global collection script",
+						"// Generate unique namespace name and description for testing",
+						"function generateUniqueString(prefix) {",
+						"  const randomPart = Math.random().toString(16).slice(2);",
+						"  const timestamp = Date.now().toString(36);",
+						"  return `${prefix}_${timestamp}_${randomPart}`;",
+						"}",
+						"const uniqueName = generateUniqueString(\"name\");",
+						"const uniqueDesc = generateUniqueString(\"desc\");",
+						"pm.variables.set(\"namespace_name\", uniqueName);",
+						"pm.variables.set(\"namespace_desc\", uniqueDesc);"
+						]
+					}
+					},
+					{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"pm.test(\"Status code is 201, 400, 401, or 429\", function () {",
+						"  pm.expect(pm.response.code).to.be.oneOf([201, 400, 401, 429]);",
+						"});",
+						"pm.test(\"Response has message\", function () {",
+						"  pm.expect(pm.response.json()).to.have.property(\"message\");",
+						"});",
+						"if (pm.response.code === 201) {",
+						"  const response = pm.response.json();",
+						"  pm.collectionVariables.set(\"namespace\", response.data.namespace_id);",
+						"  pm.collectionVariables.set(\"namespace_name\", response.data.namespace_name);",
+						"}"
+						]
+					}
+					}
+				],
+				"request": {
+					"auth": {
+					"type": "noauth"
+					},
+					"method": "POST",
+					"header": [],
+					"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"{{namespace_name}}\",\n  \"description\": \"{{namespace_desc}}\",\n  \"meta\": {}\n}",
+					"options": {
+						"raw": {
+						"language": "json"
+						}
+					}
+					},
+					"url": {
+					"raw": "{{url}}/dedi/create-namespace",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"dedi",
+						"create-namespace"
+					]
+					},
+					"description": "📁 CREATE NAMESPACE\n\nCreates a new namespace to organize and group related registries.\n\n**Authentication:** Required (Cookie or API Key)\n\n**Request Body:**\n- `name`: Unique namespace name (string, required)\n- `description`: Description of the namespace purpose (string, required)\n- `meta`: Additional metadata (object, optional)\n- `version_count`: Version number (number, optional)\n\n**Response:**\n- Namespace details including `namespace_id`, `digest`, and creation info\n- The `namespace_id` can be used in subsequent registry and record operations\n\n**Use Cases:**\n- Organizing data by department/project\n- Creating isolated environments\n- Setting up customer-specific data spaces\n- Domain-based data segregation\n\n**Rate Limits:** Standard API rate limits apply"
+				},
+				"response": []
+			},
+			{
+				"name": "create registry",
+				"event": [
+					{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"// ✅ Authentication is handled automatically by the global collection script"
+						]
+					}
+					},
+					{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"pm.test(\"Status code is 201, 400, 401, 403, 409, or 429\", function () {",
+						"  pm.expect(pm.response.code).to.be.oneOf([201, 400, 401, 403, 409, 429]);",
+						"});",
+						"pm.test(\"Response has message\", function () {",
+						"  pm.expect(pm.response.json()).to.have.property(\"message\");",
+						"});",
+						"if (pm.response.code === 201) {",
+						" pm.collectionVariables.set(\"registry_name\", \"subscribers2777\");",
+						"}"
+						]
+					}
+					}
+				],
+				"request": {
+					"auth": {
+					"type": "noauth"
+					},
+					"method": "POST",
+					"header": [],
+					"body": {
+					"mode": "raw",
+					"raw": "{\n  \"registry_name\": \"{{registry_name}}\",\n  \"description\": \"{{registry_description}}\",\n  \"schema\": {\n    \"$schema\": \"http://json-schema.org/draft-07/schema#\",\n    \"description\": \"Custom registry schema for {{registry_name}}\",\n    \"type\": \"object\",\n    \"properties\": {\n      \"name\": {\n        \"type\": \"string\",\n        \"description\": \"Name of the entity\"\n      },\n      \"description\": {\n        \"type\": \"string\",\n        \"description\": \"Description of the entity\"\n      }\n    },\n    \"required\": [\"name\"]\n  },\n  \"tag\": \"custom\",\n  \"meta\": {\n    \"created_by\": \"api\",\n    \"purpose\": \"Production registry\"\n  }\n}",
+					"options": {
+						"raw": {
+						"language": "json"
+						}
+					}
+					},
+					"url": {
+					"raw": "{{url}}/dedi/{{namespace}}/create-registry",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"dedi",
+						"{{namespace}}",
+						"create-registry"
+					]
+					},
+					"description": "📋 CREATE REGISTRY\n\nCreates a new registry within a namespace to store structured records.\n\n**Authentication:** Required (Cookie or API Key)\n\n**Path Parameters:**\n- `namespace`: The namespace ID or domain where the registry will be created\n\n**Request Body:**\n- `registry_name`: Unique name for the registry\n- `description`: Description of what this registry stores\n- `schema`: JSON Schema defining the structure of records\n- `tag`: Schema tag ('custom', 'membership', 'public_key', 'revoke')\n- `meta`: Additional metadata (optional)\n\n**Response:**\n- Registry details including `registry_id`, `digest`, and metadata\n\n**Use Cases:**\n- Setting up data collection schemas\n- Creating structured data repositories\n- Defining verification templates"
+				},
+				"response": []
+			},
+			{
+				"name": "save record as draft",
+				"event": [
+					{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"// ✅ Authentication is handled automatically by the global collection script",
+						"// Generate unique record name/desc for testing",
+						"function generateUniqueString(prefix) {",
+						"  const randomPart = Math.random().toString(16).slice(2);",
+						"  const timestamp = Date.now().toString(36);",
+						"  return `${prefix}_${timestamp}_${randomPart}`;",
+						"}",
+						"const uniqueName = generateUniqueString(\"rec_name\");",
+						"const uniqueDesc = generateUniqueString(\"rec_desc\");",
+						"pm.variables.set(\"rec_name\", uniqueName);",
+						"pm.variables.set(\"rec_desc\", uniqueDesc);"
+						]
+					}
+					},
+					{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"pm.test(\"Status code is 201, 400, 401, 403, 409, or 429\", function () {",
+						"  pm.expect(pm.response.code).to.be.oneOf([201, 400, 401, 403, 409, 429]);",
+						"});",
+						"pm.test(\"Response has message\", function () {",
+						"  pm.expect(pm.response.json()).to.have.property(\"message\");",
+						"});",
+						"if (pm.response.code === 201) {",
+						"  pm.collectionVariables.set(\"record_name\", pm.variables.get(\"rec_name\"));",
+						"}"
+						]
+					}
+					}
+				],
+				"request": {
+					"auth": {
+					"type": "noauth"
+					},
+					"method": "POST",
+					"header": [],
+					"body": {
+					"mode": "raw",
+					"raw": "{\n  \"record_name\": \"{{rec_name}}\",\n  \"description\": \"{{rec_desc}}\",\n  \"details\": {\n    \"name\": \"Sample Entity Name\",\n    \"description\": \"Sample entity for testing\"\n  },\n  \"meta\": {\n    \"// This field is for your application using DeDi - add any metadata you need\": \"\",\n    \"application_id\": \"your-app-identifier\",\n    \"created_by\": \"api-user\",\n    \"environment\": \"production\"\n  },\n  \"valid_till\": \"2025-12-31T23:59:59Z\"\n}",
+					"options": {
+						"raw": {
+						"language": "json"
+						}
+					}
+					},
+					"url": {
+					"raw": "{{url}}/dedi/{{namespace}}/{{registry_name}}/save-record-as-draft?publish=false",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"dedi",
+						"{{namespace}}",
+						"{{registry_name}}",
+						"save-record-as-draft"
+					],
+					"query": [
+						{
+							"key": "publish",
+							"value": "false",
+							"description": "Set to 'true' to save and publish immediately"
+						}
+					]
+					},
+					"description": "Requires authentication via cookie. After login/verification, copy the 'token' cookie from your browser and paste it into the 'auth_cookie' variable in Postman. This endpoint saves a record as draft. The record_name is saved for chaining."
+				},
+				"response": []
+			},
+			{
+				"name": "publish record",
+				"event": [
+					{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"// ✅ Authentication is handled automatically by the global collection script"
+						]
+					}
+					},
+					{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"pm.test(\"Status code is 200, 400, 401, 403, 404, or 429\", function () {",
+						"  pm.expect(pm.response.code).to.be.oneOf([200, 400, 401, 403, 404, 429]);",
+						"});",
+						"pm.test(\"Response has message\", function () {",
+						"  pm.expect(pm.response.json()).to.have.property(\"message\");",
+						"});"
+						]
+					}
+					}
+				],
+				"request": {
+					"auth": {
+					"type": "noauth"
+					},
+					"method": "POST",
+					"header": [],
+					"body": {
+					"mode": "raw",
+					"raw": "{\n  \"record_name\": \"{{record_name}}\",\n  \"description\": \"Details of {{record_name}}\",\n  \"details\": {\n    \"name\": \"Entity Name\",\n    \"description\": \"Entity description matching the registry schema\"\n  },\n  \"meta\": {\n    \"// This field is for your application using DeDi - add any metadata you need\": \"\",\n    \"application_id\": \"your-app-identifier\",\n    \"updated_by\": \"api-user\",\n    \"environment\": \"production\"\n  }\n}",
+					"options": {
+						"raw": {
+						"language": "json"
+						}
+					}
+					},
+					"url": {
+					"raw": "{{url}}/dedi/{{namespace}}/{{registry_name}}/{{record_name}}/publish-record",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"dedi",
+						"{{namespace}}",
+						"{{registry_name}}",
+						"{{record_name}}",
+						"publish-record"
+					]
+					},
+					"description": "Requires authentication via cookie. After login/verification, copy the 'token' cookie from your browser and paste it into the 'auth_cookie' variable in Postman. This endpoint publishes a record. The record_name is used from the previous draft step."
+				},
+				"response": []
+			},
+			{
+				"name": "bulk-upload",
+				"event": [
+					{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"// ✅ Authentication is handled automatically by the global collection script"
+						]
+					}
+					},
+					{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"pm.test(\"Status code is 200 or 400\", function () {",
+						"  pm.expect(pm.response.code).to.be.oneOf([200, 400]);",
+						"});",
+						"pm.test(\"Response has jobId or error message\", function () {",
+						"  const res = pm.response.json();",
+						"  if (pm.response.code === 200) {",
+						"    pm.expect(res.data).to.have.property(\"jobId\");",
+						"    pm.collectionVariables.set(\"bulk_upload_jobId\", res.data.jobId);",
+						"  } else {",
+						"    pm.expect(res).to.have.property(\"message\");",
+						"  }",
+						"});"
+						]
+					}
+					}
+				],
+				"request": {
+					"auth": {
+					"type": "noauth"
+					},
+					"method": "POST",
+					"header": [],
+					"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+						"key": "namespace",
+						"value": "{{namespace}}",
+						"type": "text"
+						},
+						{
+						"key": "registry_name",
+						"value": "{{registry_name}}",
+						"type": "text",
+						"disabled": true
+						},
+						{
+						"key": "file",
+						"type": "file"
+						}
+					]
+					},
+					"url": {
+					"raw": "{{url}}/dedi/bulk-upload",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"dedi",
+						"bulk-upload"
+					]
+					},
+					"description": "Requires authentication via cookie. After login/verification, copy the 'token' cookie from your browser and paste it into the 'auth_cookie' variable in Postman. The 'namespace' should be set to the target namespace ID. The 'file' parameter should be set to one or more CSV files. The response will include a jobId for status tracking."
+				},
+				"response": []
+			},
+			{
+				"name": "Get Job Status",
+				"event": [
+					{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"// ✅ Authentication is handled automatically by the global collection script",
+						"// Set default job ID if not present",
+						"if (!pm.variables.get(\"bulk_upload_jobId\")) {",
+						"  pm.variables.set(\"bulk_upload_jobId\", \"<paste-your-job-id-here>\");",
+						"}"
+						]
+					}
+					},
+					{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"pm.test(\"Status code is 200 or 401 or 404\", function () {",
+						"  pm.expect(pm.response.code).to.be.oneOf([200, 401, 404]);",
+						"});",
+						"pm.test(\"Response has job status or error message\", function () {",
+						"  const res = pm.response.json();",
+						"  if (pm.response.code === 200) {",
+						"    pm.expect(res.data).to.have.property(\"status\");",
+						"    pm.expect(res.data).to.have.property(\"jobId\");",
+						"  } else {",
+						"    pm.expect(res).to.have.property(\"message\");",
+						"  }",
+						"});"
+						]
+					}
+					}
+				],
+				"request": {
+					"auth": {
+					"type": "noauth"
+					},
+					"method": "GET",
+					"header": [],
+					"url": {
+					"raw": "{{url}}/dedi/bulk-upload/status/{{bulk_upload_jobId}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"dedi",
+						"bulk-upload",
+						"status",
+						"{{bulk_upload_jobId}}"
+					]
+					},
+					"description": "Get the status of a bulk upload job. Requires authentication via cookie and a valid jobId. After login/verification, copy the 'token' cookie from your browser and paste it into the 'auth_cookie' variable in Postman."
+				},
+				"response": []
+			},
+			{
+				"name": "Cancel Job",
+				"event": [
+					{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"// ✅ Authentication is handled automatically by the global collection script",
+						"// Set default job ID if not present",
+						"if (!pm.variables.get(\"bulk_upload_jobId\")) {",
+						"  pm.variables.set(\"bulk_upload_jobId\", \"<paste-your-job-id-here>\");",
+						"}"
+						]
+					}
+					},
+					{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"pm.test(\"Status code is 200 or 401 or 404\", function () {",
+						"  pm.expect(pm.response.code).to.be.oneOf([200, 401, 404]);",
+						"});",
+						"pm.test(\"Response has message\", function () {",
+						"  pm.expect(pm.response.json()).to.have.property(\"message\");",
+						"});"
+						]
+					}
+					}
+				],
+				"request": {
+					"auth": {
+					"type": "noauth"
+					},
+					"method": "POST",
+					"header": [],
+					"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+						"language": "json"
+						}
+					}
+					},
+					"url": {
+					"raw": "{{url}}/dedi/bulk-upload/cancel/{{bulk_upload_jobId}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"dedi",
+						"bulk-upload",
+						"cancel",
+						"{{bulk_upload_jobId}}"
+					]
+					},
+					"description": "Cancel a bulk upload job. Requires authentication via cookie and a valid jobId. After login/verification, copy the 'token' cookie from your browser and paste it into the 'auth_cookie' variable in Postman."
+				},
+				"response": []
+				},
+				{
+				"name": "Get User Jobs",
+				"event": [
+					{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"// ✅ Authentication is handled automatically by the global collection script"
+						]
+					}
+					},
+					{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"pm.test(\"Status code is 200 or 401\", function () {",
+						"  pm.expect(pm.response.code).to.be.oneOf([200, 401]);",
+						"});",
+						"pm.test(\"Response has jobs array or error message\", function () {",
+						"  const res = pm.response.json();",
+						"  if (pm.response.code === 200) {",
+						"    pm.expect(res.data).to.be.an('array');",
+						"  } else {",
+						"    pm.expect(res).to.have.property(\"message\");",
+						"  }",
+						"});"
+						]
+					}
+					}
+				],
+				"request": {
+					"auth": {
+					"type": "noauth"
+					},
+					"method": "GET",
+					"header": [],
+					"url": {
+					"raw": "{{url}}/dedi/bulk-upload/jobs",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"dedi",
+						"bulk-upload",
+						"jobs"
+					]
+					},
+					"description": "Get list of user's bulk upload jobs. Requires authentication via cookie. After login/verification, copy the 'token' cookie from your browser and paste it into the 'auth_cookie' variable in Postman."
+				},
+				"response": []
+				}
+			]
+		},
+		{
+			"name": "delegation",
+			"item": [
+				{
+				"name": "Add registry delegate",
+				"event": [
+					{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"// Ensure namespace and registry_name are set",
+						"if (!pm.variables.get(\"namespace\")) {",
+						"  pm.variables.set(\"namespace\", \"<your-namespace-id>\");",
+						"}",
+						"if (!pm.variables.get(\"registry_name\")) {",
+						"  pm.variables.set(\"registry_name\", \"<your-registry-name>\");",
+						"}",
+						"// Ensure delegate_email is set",
+						"if (!pm.variables.get(\"delegate_email\")) {",
+						"  pm.variables.set(\"delegate_email\", \"adi.bhagavath+abws22@dhiway.com\");",
+						"}",
+						"// Ensure token is set (must be JWT, not cookie)",
+						"if (!pm.variables.get(\"token\")) {",
+						"  pm.variables.set(\"token\", \"<paste-access-token-here>\");",
+						"}"
+						]
+					}
+					},
+					{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"pm.test(\"Status code is 200 or error\", function () {",
+						"  pm.expect([200, 400, 401, 403, 404, 500]).to.include(pm.response.code);",
+						"});",
+						"pm.test(\"Response has message\", function () {",
+						"  pm.expect(pm.response.json()).to.have.property(\"message\");",
+						"});"
+						]
+					}
+					}
+				],
+				"request": {
+					"auth": {
+						"type": "noauth"
+					},
+					"method": "POST",
+					"header": [],
+					"body": {
+					"mode": "raw",
+					"raw": "{\n  \"email\": \"{{delegate_email}}\"\n}",
+					"options": {
+						"raw": {
+						"language": "json"
+						}
+					}
+					},
+					"url": {
+					"raw": "{{url}}/dedi/{{namespace}}/{{registry_name}}/add-delegate",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"dedi",
+						"{{namespace}}",
+						"{{registry_name}}",
+						"add-delegate"
+					]
+					}
+				},
+				"response": []
+				}
+			]
+		},
+		{
+			"name": "domain",
+			"item": [
+				{
+				"name": "Generate TXT",
+				"event": [
+					{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"// ✅ Authentication is handled automatically by the global collection script",
+						"// Set default values for domain verification",
+						"if (!pm.variables.get(\"namespace\")) {",
+						"  pm.variables.set(\"namespace\", \"<your-namespace-id>\");",
+						"}",
+						"if (!pm.variables.get(\"domain\")) {",
+						"  pm.variables.set(\"domain\", \"<your-domain.com>\");",
+						"}"
+						]
+					}
+					},
+					{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"pm.test(\"Status code is 200 or error\", function () {",
+						"  pm.expect([200, 400, 404, 500]).to.include(pm.response.code);",
+						"});",
+						"pm.test(\"Response has message\", function () {",
+						"  pm.expect(pm.response.json()).to.have.property(\"message\");",
+						"});",
+						"if (pm.response.code === 200 && pm.response.json().txt) {",
+						"  pm.collectionVariables.set(\"generated_txt\", pm.response.json().txt);",
+						"}"
+						]
+					}
+					}
+				],
+				"request": {
+					"auth": {
+					"type": "noauth"
+					},
+					"method": "GET",
+					"header": [],
+					"url": {
+					"raw": "{{url}}/dedi/generate-dns-txt/{{namespace}}/{{domain}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"dedi",
+						"generate-dns-txt",
+						"{{namespace}}",
+						"{{domain}}"
+					]
+					}
+				},
+				"response": []
+				},
+				{
+				"name": "verify domain",
+				"event": [
+					{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"if (!pm.variables.get(\"namespace\")) {",
+						"  pm.variables.set(\"namespace\", \"<your-namespace-id>\");",
+						"}"
+						]
+					}
+					},
+					{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"pm.test(\"Status code is 200 or error\", function () {",
+						"  pm.expect([200, 400, 404, 500]).to.include(pm.response.code);",
+						"});",
+						"pm.test(\"Response has message\", function () {",
+						"  pm.expect(pm.response.json()).to.have.property(\"message\");",
+						"});"
+						]
+					}
+					}
+				],
+				"request": {
+					"auth": {
+					"type": "noauth"
+					},
+					"method": "POST",
+					"header": [],
+					"body": {
+					"mode": "raw",
+					"raw": "{\n  \"namespace_id\": \"{{namespace}}\"\n}",
+					"options": {
+						"raw": {
+						"language": "json"
+						}
+					}
+					},
+					"url": {
+					"raw": "{{url}}/dedi/verify-domain",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"dedi",
+						"verify-domain"
+					]
+					}
+				},
+				"response": []
+				},
+				{
+				"name": "Check verification",
+				"protocolProfileBehavior": {
+					"disableBodyPruning": true
+				},
+				"event": [
+					{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"// Ensure namespace is set",
+						"if (!pm.variables.get(\"namespace\")) {",
+						"  pm.variables.set(\"namespace\", \"<your-namespace-id>\");",
+						"}"
+						]
+					}
+					},
+					{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"pm.test(\"Status code is 200 or error\", function () {",
+						"  pm.expect([200, 400, 404, 500]).to.include(pm.response.code);",
+						"});",
+						"pm.test(\"Response has verified field\", function () {",
+						"  pm.expect(pm.response.json()).to.have.property(\"verified\");",
+						"});"
+						]
+					}
+					}
+				],
+				"request": {
+					"auth": {
+					"type": "noauth"
+					},
+					"method": "GET",
+					"header": [],
+					"url": {
+					"raw": "{{url}}/dedi/check-verification/{{namespace}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"dedi",
+						"check-verification",
+						"{{namespace}}"
+					]
+					}
+				},
+				"response": []
+				}
+			]
+		},
+		{
+			"name": "update",
+			"item": [
+				{
+				"name": "update namespace",
+				"event": [
+					{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"// Set unique name/desc for testing",
+						"function generateUniqueString(prefix) {",
+						"  const randomPart = Math.random().toString(16).slice(2);",
+						"  const timestamp = Date.now().toString(36);",
+						"  return `${prefix}_${timestamp}_${randomPart}`;",
+						"}",
+						"const uniqueName = generateUniqueString(\"name\");",
+						"const uniqueDesc = generateUniqueString(\"desc\");",
+						"pm.variables.set(\"ns_name_update\", uniqueName);",
+						"pm.variables.set(\"ns_desc_update\", uniqueDesc);",
+						"// ✅ Authentication is handled automatically by the global collection script"
+						]
+					}
+					},
+					{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"pm.test(\"Status code is 201 or error\", function () {",
+						"  pm.expect([201, 400, 401, 403, 404, 500]).to.include(pm.response.code);",
+						"});",
+						"if (pm.response.code === 201) {",
+						"  const res = pm.response.json();",
+						"  pm.expect(res).to.have.property(\"message\");",
+						"  pm.expect(res).to.have.property(\"data\");",
+						"  pm.collectionVariables.set(\"namespace_digest\", res.data.digest);",
+						"}"
+						]
+					}
+					}
+				],
+				"request": {
+					"auth": { "type": "noauth" },
+					"method": "POST",
+					"header": [],
+					"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"{{ns_name_update}}\",\n  \"description\": \"{{ns_desc_update}}\",\n  \"meta\": {},\n  \"ttl\": 3600\n}",
+					"options": { "raw": { "language": "json" } }
+					},
+					"url": {
+					"raw": "{{url}}/dedi/{{namespace}}/update-namespace",
+					"host": ["{{url}}"],
+					"path": ["dedi", "{{namespace}}", "update-namespace"]
+					}
+				},
+				"response": []
+				},
+				{
+				"name": "update registry",
+				"event": [
+					{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"// Set unique description for testing",
+						"function generateUniqueString(prefix) {",
+						"  const randomPart = Math.random().toString(16).slice(2);",
+						"  const timestamp = Date.now().toString(36);",
+						"  return `${prefix}_${timestamp}_${randomPart}`;",
+						"}",
+						"const uniqueDesc = generateUniqueString(\"reg_desc\");",
+						"pm.variables.set(\"reg_desc_update\", uniqueDesc);",
+						"// ✅ Authentication is handled automatically by the global collection script"
+						]
+					}
+					},
+					{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"pm.test(\"Status code is 200 or error\", function () {",
+						"  pm.expect([200, 400, 401, 403, 404, 500]).to.include(pm.response.code);",
+						"});",
+						"if (pm.response.code === 200) {",
+						"  const res = pm.response.json();",
+						"  pm.expect(res).to.have.property(\"message\");",
+						"  pm.expect(res).to.have.property(\"data\");",
+						"  pm.collectionVariables.set(\"registry_digest\", res.data.digest);",
+						"}"
+						]
+					}
+					}
+				],
+				"request": {
+					"auth": { "type": "noauth" },
+					"method": "POST",
+					"header": [],
+					"body": {
+					"mode": "raw",
+					"raw": "{\n  \"description\": \"{{reg_desc_update}}\",\n  \"meta\": {},\n  \"query_allowed\": true,\n  \"ttl\": 3600\n}",
+					"options": { "raw": { "language": "json" } }
+					},
+					"url": {
+					"raw": "{{url}}/dedi/{{namespace}}/{{registry_name}}/update-registry",
+					"host": ["{{url}}"],
+					"path": ["dedi", "{{namespace}}", "{{registry_name}}", "update-registry"]
+					}
+				},
+				"response": []
+				},
+				{
+				"name": "update record",
+				"event": [
+					{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"// Set unique description for testing",
+						"function generateUniqueString(prefix) {",
+						"  const randomPart = Math.random().toString(16).slice(2);",
+						"  const timestamp = Date.now().toString(36);",
+						"  return `${prefix}_${timestamp}_${randomPart}`;",
+						"}",
+						"const uniqueDesc = generateUniqueString(\"rec_desc\");",
+						"pm.variables.set(\"rec_desc_update\", uniqueDesc);",
+						"// ✅ Authentication is handled automatically by the global collection script"
+						]
+					}
+					},
+					{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"pm.test(\"Status code is 200 or error\", function () {",
+						"  pm.expect([200, 400, 401, 403, 404, 500]).to.include(pm.response.code);",
+						"});",
+						"if (pm.response.code === 200) {",
+						"  const res = pm.response.json();",
+						"  pm.expect(res).to.have.property(\"message\");",
+						"  pm.expect(res).to.have.property(\"data\");",
+						"  pm.collectionVariables.set(\"record_digest\", res.data.digest);",
+						"}"
+						]
+					}
+					}
+				],
+				"request": {
+					"auth": { "type": "noauth" },
+					"method": "POST",
+					"header": [],
+					"body": {
+					"mode": "raw",
+					"raw": "{\n  \"description\": \"{{rec_desc_update}}\",\n  \"details\": {},\n  \"meta\": {},\n  \"valid_till\": \"\",\n  \"ttl\": 3600\n}",
+					"options": { "raw": { "language": "json" } }
+					},
+					"url": {
+					"raw": "{{url}}/dedi/{{namespace}}/{{registry_name}}/{{record_name}}/update-record",
+					"host": ["{{url}}"],
+					"path": ["dedi", "{{namespace}}", "{{registry_name}}", "{{record_name}}", "update-record"]
+					}
+				},
+				"response": []
+				}
+			]
+		},
+		{
+			"name": "state management",
+			"item": [
+				{
+				"name": "revoke registry",
+				"event": [
+					{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"// ✅ Authentication is handled automatically by the global collection script"
+						]
+					}
+					},
+					{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"pm.test(\"Status code is 200 or error\", function () {",
+						"  pm.expect([200, 400, 401, 403, 404, 500]).to.include(pm.response.code);",
+						"});",
+						"if (pm.response.code === 200) {",
+						"  const res = pm.response.json();",
+						"  pm.expect(res).to.have.property(\"message\");",
+						"  pm.expect(res.message).to.match(/revoked/i);",
+						"}"
+						]
+					}
+					}
+				],
+				"request": {
+					"auth": { "type": "noauth" },
+					"method": "POST",
+					"header": [],
+					"url": {
+					"raw": "{{url}}/dedi/{{namespace}}/{{registry_name}}/revoke-registry",
+					"host": ["{{url}}"],
+					"path": ["dedi", "{{namespace}}", "{{registry_name}}", "revoke-registry"]
+					}
+				},
+				"response": []
+				},
+				{
+				"name": "reinstate registry",
+				"event": [
+					{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"// ✅ Authentication is handled automatically by the global collection script"
+						]
+					}
+					},
+					{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"pm.test(\"Status code is 200 or error\", function () {",
+						"  pm.expect([200, 400, 401, 403, 404, 500]).to.include(pm.response.code);",
+						"});",
+						"if (pm.response.code === 200) {",
+						"  const res = pm.response.json();",
+						"  pm.expect(res).to.have.property(\"message\");",
+						"  pm.expect(res.message).to.match(/reinstated/i);",
+						"}"
+						]
+					}
+					}
+				],
+				"request": {
+					"auth": { "type": "noauth" },
+					"method": "POST",
+					"header": [],
+					"url": {
+					"raw": "{{url}}/dedi/{{namespace}}/{{registry_name}}/reinstate-registry",
+					"host": ["{{url}}"],
+					"path": ["dedi", "{{namespace}}", "{{registry_name}}", "reinstate-registry"]
+					}
+				},
+				"response": []
+				},
+				{
+				"name": "archive registry",
+				"event": [
+					{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"// ✅ Authentication is handled automatically by the global collection script"
+						]
+					}
+					},
+					{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"pm.test(\"Status code is 200 or error\", function () {",
+						"  pm.expect([200, 400, 401, 403, 404, 500]).to.include(pm.response.code);",
+						"});",
+						"if (pm.response.code === 200) {",
+						"  const res = pm.response.json();",
+						"  pm.expect(res).to.have.property(\"message\");",
+						"  pm.expect(res.message).to.match(/archived/i);",
+						"}"
+						]
+					}
+					}
+				],
+				"request": {
+					"auth": { "type": "noauth" },
+					"method": "POST",
+					"header": [],
+					"url": {
+					"raw": "{{url}}/dedi/{{namespace}}/{{registry_name}}/archive-registry",
+					"host": ["{{url}}"],
+					"path": ["dedi", "{{namespace}}", "{{registry_name}}", "archive-registry"]
+					}
+				},
+				"response": []
+				},
+				{
+				"name": "restore registry",
+				"event": [
+					{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"// ✅ Authentication is handled automatically by the global collection script"
+						]
+					}
+					},
+					{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"pm.test(\"Status code is 200 or error\", function () {",
+						"  pm.expect([200, 400, 401, 403, 404, 500]).to.include(pm.response.code);",
+						"});",
+						"if (pm.response.code === 200) {",
+						"  const res = pm.response.json();",
+						"  pm.expect(res).to.have.property(\"message\");",
+						"  pm.expect(res.message).to.match(/restored/i);",
+						"}"
+						]
+					}
+					}
+				],
+				"request": {
+					"auth": { "type": "noauth" },
+					"method": "POST",
+					"header": [],
+					"url": {
+					"raw": "{{url}}/dedi/{{namespace}}/{{registry_name}}/restore-registry",
+					"host": ["{{url}}"],
+					"path": ["dedi", "{{namespace}}", "{{registry_name}}", "restore-registry"]
+					}
+				},
+				"response": []
+				},
+				{
+				"name": "suspend record",
+				"event": [
+					{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"// ✅ Authentication is handled automatically by the global collection script"
+						]
+					}
+					},
+					{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"pm.test(\"Status code is 200 or error\", function () {",
+						"  pm.expect([200, 400, 401, 403, 404, 500]).to.include(pm.response.code);",
+						"});",
+						"if (pm.response.code === 200) {",
+						"  const res = pm.response.json();",
+						"  pm.expect(res).to.have.property(\"message\");",
+						"  pm.expect(res.message).to.match(/suspended/i);",
+						"}"
+						]
+					}
+					}
+				],
+				"request": {
+					"auth": { "type": "noauth" },
+					"method": "POST",
+					"header": [],
+					"url": {
+					"raw": "{{url}}/dedi/{{namespace}}/{{registry_name}}/{{record_name}}/suspend-record",
+					"host": ["{{url}}"],
+					"path": ["dedi", "{{namespace}}", "{{registry_name}}", "{{record_name}}", "suspend-record"]
+					}
+				},
+				"response": []
+				},
+				{
+				"name": "reinstate record",
+				"event": [
+					{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"// ✅ Authentication is handled automatically by the global collection script"
+						]
+					}
+					},
+					{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"pm.test(\"Status code is 200 or error\", function () {",
+						"  pm.expect([200, 400, 401, 403, 404, 500]).to.include(pm.response.code);",
+						"});",
+						"if (pm.response.code === 200) {",
+						"  const res = pm.response.json();",
+						"  pm.expect(res).to.have.property(\"message\");",
+						"  pm.expect(res.message).to.match(/reinstated/i);",
+						"}"
+						]
+					}
+					}
+				],
+				"request": {
+					"auth": { "type": "noauth" },
+					"method": "POST",
+					"header": [],
+					"url": {
+					"raw": "{{url}}/dedi/{{namespace}}/{{registry_name}}/{{record_name}}/reinstate-record",
+					"host": ["{{url}}"],
+					"path": ["dedi", "{{namespace}}", "{{registry_name}}", "{{record_name}}", "reinstate-record"]
+					}
+				},
+				"response": []
+				},
+				{
+				"name": "revoke record",
+				"event": [
+					{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"// ✅ Authentication is handled automatically by the global collection script"
+						]
+					}
+					},
+					{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"pm.test(\"Status code is 200 or error\", function () {",
+						"  pm.expect([200, 400, 401, 403, 404, 500]).to.include(pm.response.code);",
+						"});",
+						"if (pm.response.code === 200) {",
+						"  const res = pm.response.json();",
+						"  pm.expect(res).to.have.property(\"message\");",
+						"  pm.expect(res.message).to.match(/archived|revoked/i);",
+						"}"
+						]
+					}
+					}
+				],
+				"request": {
+					"auth": { "type": "noauth" },
+					"method": "POST",
+					"header": [],
+					"url": {
+					"raw": "{{url}}/dedi/{{namespace}}/{{registry_name}}/{{record_name}}/revoke-record",
+					"host": ["{{url}}"],
+					"path": ["dedi", "{{namespace}}", "{{registry_name}}", "{{record_name}}", "revoke-record"]
+					}
+				},
+				"response": []
+				},
+				{
+				"name": "change record state",
+				"event": [
+					{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"// ✅ Authentication is handled automatically by the global collection script"
+						]
+					}
+					},
+					{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"pm.test(\"Status code is 200 or error\", function () {",
+						"  pm.expect([200, 400, 401, 403, 404, 500]).to.include(pm.response.code);",
+						"});",
+						"if (pm.response.code === 200) {",
+						"  const res = pm.response.json();",
+						"  pm.expect(res).to.have.property(\"message\");",
+						"  pm.expect(res.message).to.match(/restored|state|changed/i);",
+						"}"
+						]
+					}
+					}
+				],
+				"request": {
+					"auth": { "type": "noauth" },
+					"method": "POST",
+					"header": [],
+					"body": {
+					"mode": "raw",
+					"raw": "{\n  \"state\": \"SUSPENDED\"\n}",
+					"options": { "raw": { "language": "json" } }
+					},
+					"url": {
+					"raw": "{{url}}/dedi/{{namespace}}/{{registry_name}}/{{record_name}}/change-record-state",
+					"host": ["{{url}}"],
+					"path": ["dedi", "{{namespace}}", "{{registry_name}}", "{{record_name}}", "change-record-state"]
+					}
+				},
+				"response": []
+				}
+			]
+		},
+		{
+			"name": "access",
+			"item": [
+				{
+					"name": "lookup",
+					"item": [
+						{
+						"name": "namespace",
+						"event": [
+							{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+								"// ✅ Authentication is handled automatically by the global collection script"
+								]
+							}
+							},
+							{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+								"pm.test(\"Status code is 200 or error\", function () {",
+								"  pm.expect([200, 400, 401, 404, 500]).to.include(pm.response.code);",
+								"});",
+								"if (pm.response.code === 200) {",
+								"  const res = pm.response.json();",
+								"  pm.expect(res).to.have.property(\"message\");",
+								"  pm.expect(res).to.have.property(\"data\");",
+								"}"
+								]
+							}
+							}
+						],
+						"request": {
+							"auth": { "type": "noauth" },
+							"method": "GET",
+							"header": [],
+							"url": {
+							"raw": "{{url}}/dedi/lookup/{{namespace}}",
+							"host": ["{{url}}"],
+							"path": ["dedi", "lookup", "{{namespace}}"]
+							}
+						},
+						"response": []
+						},
+						{
+						"name": "registry",
+						"event": [
+							{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+								"// ✅ Authentication is handled automatically by the global collection script"
+								]
+							}
+							},
+							{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+								"pm.test(\"Status code is 200 or error\", function () {",
+								"  pm.expect([200, 400, 401, 404, 500]).to.include(pm.response.code);",
+								"});",
+								"if (pm.response.code === 200) {",
+								"  const res = pm.response.json();",
+								"  pm.expect(res).to.have.property(\"message\");",
+								"  pm.expect(res).to.have.property(\"data\");",
+								"  pm.collectionVariables.set(\"registry_id\", res.data.registry_id);",
+								"}"
+								]
+							}
+							}
+						],
+						"request": {
+							"auth": { "type": "noauth" },
+							"method": "GET",
+							"header": [],
+							"url": {
+							"raw": "{{url}}/dedi/lookup/{{namespace}}/{{registry_name}}",
+							"host": ["{{url}}"],
+							"path": ["dedi", "lookup", "{{namespace}}", "{{registry_name}}"],
+							"query": [
+								{ 
+									"key": "version_id", 
+									"value": "0x06b29cd2b441cc92dc38b6d579a3eb62ad4afd26256678bc2461e88f9ec659f5",
+									"disabled": true,
+									"description": "Optional: Specific version ID for historical lookup"
+								},
+								{ 
+									"key": "as_on", 
+									"value": "2024-01-01T00:00:00Z",
+									"disabled": true,
+									"description": "Optional: Point-in-time query (ISO 8601 format)"
+								}
+							]
+							}
+						},
+						"response": []
+						},
+						{
+						"name": "record",
+						"event": [
+							{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+								"// ✅ Authentication is handled automatically by the global collection script"
+								]
+							}
+							},
+							{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+								"pm.test(\"Status code is 200 or error\", function () {",
+								"  pm.expect([200, 400, 401, 404, 500]).to.include(pm.response.code);",
+								"});",
+								"if (pm.response.code === 200) {",
+								"  const res = pm.response.json();",
+								"  pm.expect(res).to.have.property(\"message\");",
+								"  pm.expect(res).to.have.property(\"data\");",
+								"  pm.collectionVariables.set(\"record_id\", res.data.record_id);",
+								"}"
+								]
+							}
+							}
+						],
+						"request": {
+							"auth": { "type": "noauth" },
+							"method": "GET",
+							"header": [],
+							"url": {
+							"raw": "{{url}}/dedi/lookup/{{namespace}}/{{registry_name}}/{{record_name}}",
+							"host": ["{{url}}"],
+							"path": ["dedi", "lookup", "{{namespace}}", "{{registry_name}}", "{{record_name}}"]
+							}
+						},
+						"response": []
+						}
+					]
+				},
+				{
+					"name": "query",
+					"item": [
+						{
+							"name": "namespace",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"type": "text/javascript",
+										"exec": [
+											"// ✅ Authentication is handled automatically by the global collection script"
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"type": "text/javascript",
+										"exec": [
+											"pm.test(\"Status code is 200 or error\", function () {",
+											"  pm.expect([200, 400, 401, 404, 500]).to.include(pm.response.code);",
+											"});",
+											"if (pm.response.code === 200) {",
+											"  const res = pm.response.json();",
+											"  pm.expect(res).to.have.property(\"message\");",
+											"  pm.expect(res).to.have.property(\"data\");",
+											"  pm.expect(res.data).to.have.property(\"registries\");",
+											"  pm.environment.set(\"namespace_id\", res.data.namespace_id);",
+											"  pm.environment.set(\"total_registries\", res.data.total_registries);",
+											"}"
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": { "type": "noauth" },
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/dedi/query/{{namespace}}?from=&to=&status=&name=&sort=&page=&page_size=&as_on=",
+									"host": ["{{url}}"],
+									"path": ["dedi", "query", "{{namespace}}"],
+									"query": [
+										{ "key": "from", "value": "", "disabled": true },
+										{ "key": "to", "value": "", "disabled": true },
+										{ "key": "status", "value": "", "disabled": true },
+										{ "key": "name", "value": "", "disabled": true },
+										{ "key": "sort", "value": "", "disabled": true },
+										{ "key": "page", "value": "", "disabled": true },
+										{ "key": "page_size", "value": "", "disabled": true },
+										{ "key": "as_on", "value": "", "disabled": true }
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "registry",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"type": "text/javascript",
+										"exec": [
+											"// ✅ Authentication is handled automatically by the global collection script"
+										]
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"type": "text/javascript",
+										"exec": [
+											"pm.test(\"Status code is 200 or error\", function () {",
+											"  pm.expect([200, 400, 401, 404, 500]).to.include(pm.response.code);",
+											"});",
+											"if (pm.response.code === 200) {",
+											"  const res = pm.response.json();",
+											"  pm.expect(res).to.have.property(\"message\");",
+											"  pm.expect(res).to.have.property(\"data\");",
+											"  pm.expect(res.data).to.have.property(\"records\");",
+											"  pm.environment.set(\"registry_id\", res.data.registry_id);",
+											"  pm.environment.set(\"total_records\", res.data.total_records);",
+											"}"
+										]
+									}
+								}
+							],
+							"request": {
+								"auth": { "type": "noauth" },
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/dedi/query/{{namespace}}/{{registry_name}}?from=&to=&state=&name=&sort=&page=&page_size=&as_on=",
+									"host": ["{{url}}"],
+									"path": ["dedi", "query", "{{namespace}}", "{{registry_name}}"],
+									"query": [
+										{ "key": "from", "value": "", "disabled": true },
+										{ "key": "to", "value": "", "disabled": true },
+										{ "key": "state", "value": "", "disabled": true },
+										{ "key": "name", "value": "", "disabled": true },
+										{ "key": "sort", "value": "", "disabled": true },
+										{ "key": "page", "value": "", "disabled": true },
+										{ "key": "page_size", "value": "", "disabled": true },
+										{ "key": "as_on", "value": "", "disabled": true }
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "version",
+					"item": [
+						{
+						"name": "namespace version list",
+						"event": [
+							{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+								"// Ensure auth_cookie is set",
+								"if (!pm.variables.get('auth_cookie')) {",
+								"  pm.variables.set('auth_cookie', '');",
+								"}",
+								"// Ensure namespace variable is set",
+								"if (!pm.variables.get('namespace')) {",
+								"  pm.variables.set('namespace', '');",
+								"}",
+								"// Set Cookie header for authentication",
+								"pm.request.headers.upsert({key: 'Cookie', value: 'token=' + pm.variables.get('auth_cookie')});"
+								]
+							}
+							},
+							{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+								"pm.test('Status code is 200', function () {",
+								"  pm.response.to.have.status(200);",
+								"});",
+								"pm.test('Response has message and data', function () {",
+								"  var json = pm.response.json();",
+								"  pm.expect(json).to.have.property('message');",
+								"  pm.expect(json).to.have.property('data');",
+								"  pm.expect(json.data).to.have.property('versions');",
+								"  pm.expect(json.data.versions).to.be.an('array');",
+								"});",
+								"// Optionally extract total_versions for chaining",
+								"if (pm.response.json().data && pm.response.json().data.total_versions !== undefined) {",
+								"  pm.variables.set('namespace_total_versions', pm.response.json().data.total_versions);",
+								"}"
+								]
+							}
+							}
+						],
+						"request": {
+							"auth": { "type": "noauth" },
+							"method": "GET",
+							"header": [],
+							"url": {
+							"raw": "{{url}}/dedi/versions/{{namespace}}",
+							"host": [ "{{url}}" ],
+							"path": [ "dedi", "versions", "{{namespace}}" ]
+							},
+							"description": "Lists all versions for the given namespace. Requires authentication via cookie. Set 'auth_cookie' variable with your session token."
+						},
+						"response": []
+						},
+						{
+						"name": "registry version list",
+						"event": [
+							{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+								"// Ensure auth_cookie is set",
+								"if (!pm.variables.get('auth_cookie')) {",
+								"  pm.variables.set('auth_cookie', '');",
+								"}",
+								"// Ensure namespace and registry_name variables are set",
+								"if (!pm.variables.get('namespace')) {",
+								"  pm.variables.set('namespace', '');",
+								"}",
+								"if (!pm.variables.get('registry_name')) {",
+								"  pm.variables.set('registry_name', '');",
+								"}",
+								"// Set Cookie header for authentication",
+								"pm.request.headers.upsert({key: 'Cookie', value: 'token=' + pm.variables.get('auth_cookie')});"
+								]
+							}
+							},
+							{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+								"pm.test('Status code is 200', function () {",
+								"  pm.response.to.have.status(200);",
+								"});",
+								"pm.test('Response has message and data', function () {",
+								"  var json = pm.response.json();",
+								"  pm.expect(json).to.have.property('message');",
+								"  pm.expect(json).to.have.property('data');",
+								"  pm.expect(json.data).to.have.property('versions');",
+								"  pm.expect(json.data.versions).to.be.an('array');",
+								"});",
+								"// Optionally extract total_versions for chaining",
+								"if (pm.response.json().data && pm.response.json().data.total_versions !== undefined) {",
+								"  pm.variables.set('registry_total_versions', pm.response.json().data.total_versions);",
+								"}"
+								]
+							}
+							}
+						],
+						"request": {
+							"auth": { "type": "noauth" },
+							"method": "GET",
+							"header": [],
+							"url": {
+							"raw": "{{url}}/dedi/versions/{{namespace}}/{{registry_name}}",
+							"host": [ "{{url}}" ],
+							"path": [ "dedi", "versions", "{{namespace}}", "{{registry_name}}" ]
+							},
+							"description": "Lists all versions for the given registry. Requires authentication via cookie. Set 'auth_cookie' variable with your session token."
+						},
+						"response": []
+						},
+						{
+						"name": "record version list",
+						"event": [
+							{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+								"// Ensure auth_cookie is set",
+								"if (!pm.variables.get('auth_cookie')) {",
+								"  pm.variables.set('auth_cookie', '');",
+								"}",
+								"// Ensure namespace, registry_name, and record_name variables are set",
+								"if (!pm.variables.get('namespace')) {",
+								"  pm.variables.set('namespace', '');",
+								"}",
+								"if (!pm.variables.get('registry_name')) {",
+								"  pm.variables.set('registry_name', '');",
+								"}",
+								"if (!pm.variables.get('record_name')) {",
+								"  pm.variables.set('record_name', '');",
+								"}",
+								"// Set Cookie header for authentication",
+								"pm.request.headers.upsert({key: 'Cookie', value: 'token=' + pm.variables.get('auth_cookie')});"
+								]
+							}
+							},
+							{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+								"pm.test('Status code is 200', function () {",
+								"  pm.response.to.have.status(200);",
+								"});",
+								"pm.test('Response has message and data', function () {",
+								"  var json = pm.response.json();",
+								"  pm.expect(json).to.have.property('message');",
+								"  pm.expect(json).to.have.property('data');",
+								"  pm.expect(json.data).to.have.property('versions');",
+								"  pm.expect(json.data.versions).to.be.an('array');",
+								"});",
+								"// Optionally extract total_versions for chaining",
+								"if (pm.response.json().data && pm.response.json().data.total_versions !== undefined) {",
+								"  pm.variables.set('record_total_versions', pm.response.json().data.total_versions);",
+								"}"
+								]
+							}
+							}
+						],
+						"request": {
+							"auth": { "type": "noauth" },
+							"method": "GET",
+							"header": [],
+							"url": {
+							"raw": "{{url}}/dedi/versions/{{namespace}}/{{registry_name}}/{{record_name}}",
+							"host": [ "{{url}}" ],
+							"path": [ "dedi", "versions", "{{namespace}}", "{{registry_name}}", "{{record_name}}" ]
+							},
+							"description": "Lists all versions for the given record. Requires authentication via cookie. Set 'auth_cookie' variable with your session token."
+						},
+						"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "search",
+			"item": [
+				{
+				"name": "Search Records",
+				"event": [
+					{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"// ✅ Authentication is handled automatically by the global collection script",
+						"// Set default search parameters",
+						"if (!pm.variables.get(\"namespace\")) {",
+						"  pm.variables.set(\"namespace\", \"<your-namespace-id>\");",
+						"}",
+						"if (!pm.variables.get(\"search_query\")) {",
+						"  pm.variables.set(\"search_query\", \"\");",
+						"}",
+						"if (!pm.variables.get(\"search_page\")) {",
+						"  pm.variables.set(\"search_page\", \"1\");",
+						"}",
+						"if (!pm.variables.get(\"search_page_size\")) {",
+						"  pm.variables.set(\"search_page_size\", \"10\");",
+						"}"
+						]
+					}
+					},
+					{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+						"pm.test(\"Status code is 200 or 401\", function () {",
+						"  pm.expect(pm.response.code).to.be.oneOf([200, 401]);",
+						"});",
+						"pm.test(\"Response has search results or error message\", function () {",
+						"  const res = pm.response.json();",
+						"  if (pm.response.code === 200) {",
+						"    pm.expect(res).to.have.property(\"data\");",
+						"    pm.expect(res.data).to.be.an('array');",
+						"  } else {",
+						"    pm.expect(res).to.have.property(\"message\");",
+						"  }",
+						"});"
+						]
+					}
+					}
+				],
+				"request": {
+					"auth": {
+					"type": "noauth"
+					},
+					"method": "GET",
+					"header": [],
+					"url": {
+					"raw": "{{url}}/dedi/search/{{namespace}}?q={{search_query}}&registry_name={{registry_name}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"dedi",
+						"search",
+						"{{namespace}}"
+					],
+					"query": [
+						{
+						"key": "registry_name",
+						"value": "{{registry_name}}",
+						"description": "Filter by registry name"
+						},
+						{
+						"key": "q",
+						"value": "{{search_query}}",
+						"description": "Search query string"
+						}
+					]
+					},
+					"description": "Search records in a namespace. Requires authentication via cookie. After login/verification, copy the 'token' cookie from your browser and paste it into the 'auth_cookie' variable in Postman. Use query parameters to filter search results."
+				},
+				"response": []
+				}
+			]
+		},
+		{
+			"name": "📊 Platform Statistics",
+			"item": [
+				{
+					"name": "Get Platform Stats",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"  pm.expect(pm.response.code).to.equal(200);",
+									"});",
+									"pm.test(\"Response has platform statistics\", function () {",
+									"  const res = pm.response.json();",
+									"  pm.expect(res).to.have.property(\"totalNamespaces\");",
+									"  pm.expect(res).to.have.property(\"totalRegistries\");",
+									"  pm.expect(res).to.have.property(\"totalRecords\");",
+									"  pm.expect(res).to.have.property(\"totalUsers\");",
+									"  // Log stats for visibility",
+									"  console.log('📊 Platform Statistics:');",
+									"  console.log(`👥 Users: ${res.totalUsers}`);",
+									"  console.log(`📁 Namespaces: ${res.totalNamespaces}`);",
+									"  console.log(`📋 Registries: ${res.totalRegistries}`);",
+									"  console.log(`📄 Records: ${res.totalRecords}`);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/dedi/stats",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"dedi",
+								"stats"
+							]
+						},
+						"description": "📊 GET PLATFORM STATISTICS\n\nRetrieves overall platform statistics including counts of users, namespaces, registries, and records.\n\n**Authentication:** Not required (public endpoint)\n\n**Response:**\n```json\n{\n  \"totalUsers\": 1250,\n  \"totalNamespaces\": 456,\n  \"totalRegistries\": 1823,\n  \"totalRecords\": 15467\n}\n```\n\n**Use Cases:**\n- Dashboard analytics\n- Platform health monitoring\n- Public statistics display"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "https://api.dedi.global",
+			"type": "default",
+			"description": "🌐 DeDi API Base URL. Use 'https://api.dedi.global' for production or 'http://localhost:5200' for local development."
+		},
+		{
+			"key": "user_email",
+			"value": "testuser@yourdomain.com",
+			"type": "string"
+		},
+		{
+			"key": "user_name",
+			"value": "TestUser",
+			"type": "string"
+		},
+		{
+			"key": "user_action",
+			"value": "register",
+			"type": "string"
+		},
+		{
+			"key": "auth_cookie",
+			"value": "",
+			"type": "string",
+			"description": "🍪 COOKIE AUTHENTICATION: After email verification, copy the 'token' cookie from browser DevTools → Application → Cookies and paste it here. This will be automatically used for ALL authenticated requests in the collection! You only need to set this ONCE per session."
+		},
+		{
+			"key": "api_key",
+			"value": "",
+			"type": "string",
+			"description": "🔑 API KEY AUTHENTICATION: Use the 'get-api-key' endpoint to generate your API key, then paste it here. This is the recommended method for production integrations. All authenticated requests will automatically use Bearer token authentication."
+		},
+		{
+			"key": "creator_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "fetch from login",
+			"type": "string"
+		},
+		{
+			"key": "namespace",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "namespace_name",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "namespace_creator_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "registry_name",
+			"value": "",
+			"type": "string"
+		},
+		{
+    		"key": "registry_description",
+			"value": "Test registry description",
+			"type": "string"
+		},
+		{
+			"key": "registry_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "registry_auth",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "bulk_upload_jobId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "record_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "record_creator_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "delegate_info",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "record_name",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "delegate_email",
+			"value": "delegate@example.com",
+			"type": "string"
+		},
+		{
+			"key": "email_verification_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "refresh_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "rec_name",
+			"value": "test-record",
+			"type": "string"
+		},
+		{
+			"key": "rec_desc",
+			"value": "Test record description",
+			"type": "string"
+		},
+		{
+			"key": "namespace_desc",
+			"value": "Test namespace description",
+			"type": "string"
+		},
+		{
+			"key": "ns_name_update",
+			"value": "updated-namespace-name",
+			"type": "string"
+		},
+		{
+			"key": "ns_desc_update",
+			"value": "Updated namespace description",
+			"type": "string"
+		},
+		{
+			"key": "reg_desc_update",
+			"value": "Updated registry description",
+			"type": "string"
+		},
+		{
+			"key": "rec_desc_update",
+			"value": "Updated record description",
+			"type": "string"
+		},
+		{
+			"key": "domain",
+			"value": "example.com",
+			"type": "string"
+		},
+		{
+			"key": "search_query",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "search_page",
+			"value": "1",
+			"type": "string"
+		},
+		{
+			"key": "search_page_size",
+			"value": "10",
+			"type": "string"
+		},
+		{
+			"key": "schema_tag",
+			"value": "membership",
+			"type": "string"
+		}
+	]
+}
