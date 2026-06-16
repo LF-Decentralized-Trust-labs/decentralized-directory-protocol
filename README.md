@@ -49,7 +49,7 @@ Provenance-Enabled: Provides authorship of entries and a history of changes, all
 
 ## How Does DeDi Enable This?
 
-At its core, DeDi is an open protocol that defines universal, standardized API specifications for accessing any public registry, enabling seamless lookup and querying across diverse information sources. By providing open-source API specifications (available at https://github.com/finternet-io/dedi), DeDi eliminates the need for costly custom integrations, allowing registrars to implement a unified and consistent interface for public information access.
+At its core, DeDi is an open protocol that defines universal, standardized API specifications for accessing any public registry, enabling seamless lookup and querying across diverse information sources. By providing open-source API specifications, DeDi eliminates the need for costly custom integrations, allowing registrars to implement a unified and consistent interface for public information access.
 
 DeDi’s information architecture is organized around three key constructs:
 
@@ -67,7 +67,7 @@ To accelerate and simplify adoption, a ready-to-use hosted platform – dedi.glo
 
 By adopting the DeDi Protocol, relying parties can maintain a list of trusted domains and seamlessly query and look up public information, verifying digital assets and identities with unprecedented ease and confidence.
 
-DeDi supports the co-existence of multiple data standards and schemas (e.g., VC JSON-LD, mDocs/mDL) and can output information in various formats, ensuring compatibility with existing systems and technologies. This makes it secure, trustworthy, and easy to use at scale, without disrupting your existing operations.
+DeDi supports the co-existence of multiple data standards and schemas (e.g., VC JSON-LD, mDocs/mDL) and can output information in various formats, ensuring compatibility with existing systems and technologies. This makes it secure, trustworthy, and easy to use at scale, without disrupting your existing operations. More reosurces and API tools can be found [here](https://dedi-global.gitbook.io/docs) 
 
 ## Get Started
 
