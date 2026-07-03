@@ -61,6 +61,18 @@ DeDi’s information architecture is organized around three key constructs:
 
 > Important Note: The Decentralized Directory Protocol is not a software product or a rigid implementation manual—it is an open standard designed to enable trust in digital transactions by providing a universal, interoperable foundation for accessing and verifying public information.
 
+## Use Cases
+
+DeDi standardizes only *how* a public directory is discovered and verified, so the same protocol covers a wide range of trust problems. The canonical patterns include:
+
+- **Public key directories** — discover an issuer's current signing key (and its rotation history) to verify signatures.
+- **Revocation & negative lists** — check whether a credential or entity has been revoked, suspended, sanctioned, or blacklisted.
+- **Membership & affiliation** — confirm a party is a genuine, in-good-standing member of an association, consortium, or network.
+- **Policy & rule registries** — publish machine-readable rules (e.g. data-residency requirements) that platforms can auto-apply.
+- **AI agent registries** — give autonomous agents a discoverable, verifiable, revocable identity bound to an accountable operator.
+
+These patterns share one interface, so they compose — a membership record can point at a key directory, an agent authenticates against its registered key, and a revocation list gates them all. See **[docs/use-cases.md](docs/use-cases.md)** for the full walkthroughs and **[schemas/](schemas/)** for ready-to-use reference schemas.
+
 ## dedi.global – ready to use solution
 
 To accelerate and simplify adoption, a ready-to-use hosted platform – dedi.global, is offered by the Network for Humanity Foundation. This philanthropic initiative allows registrars to effortlessly publish and manage their directories on a robust decentralized infrastructure, leveraging blockchain for automated governance, scalability, and enhanced trust—complementing and fully aligned with the open DeDi protocol.
