@@ -5,7 +5,8 @@ Same publisher (`example.org`) and key (`key-1`) throughout.
 
 | File | What it is |
 |---|---|
-| [`dedi.index.json`](dedi.index.json) | The publisher's `/.well-known/dedi.index.json` manifest — declares the current key, lists two referenced registries, and embeds a third (`trust-anchors`) inline. **The authority.** |
+| [`dedi.index.json`](dedi.index.json) | The publisher's `/.well-known/dedi.index.json` manifest — declares the current key, lists two referenced registries, embeds a third (`trust-anchors`) inline, and points to a digests file. **The authority.** |
+| [`dedi.digests.json`](dedi.digests.json) | The digests file the manifest points to — current digest per registry, signed by the same key, re-issued on every content change so the manifest itself stays stable. |
 | [`dedi.public-keys.json`](dedi.public-keys.json) | A positive directory: presence of a record = a valid key. |
 | [`dedi.revocations.json`](dedi.revocations.json) | A negative list: presence of a record = revoked. Same shape; polarity comes from the registry, not a per-record field. |
 | [`domains.txt`](domains.txt) | The discovery list — publisher domains, one per line, with an optional `# head:` last-changed marker. Vouches for nobody. |
@@ -19,6 +20,7 @@ As hosted, these correspond to the recommended layout:
 https://example.org/.well-known/dedi.index.json          ← manifest — fixed path (RFC 8615)
 https://example.org/dedi/dedi.public-keys.json     ← files — RECOMMENDED convention
 https://example.org/dedi/dedi.revocations.json
+https://example.org/dedi/dedi.digests.json         ← digests file — optional
 ```
 
 The `dedi.*.json` name and the `/dedi/` directory are conventions; nothing in verification or

@@ -9,17 +9,16 @@
   ],
   "updated_at": "2026-07-01T09:00:00Z",
   "next_update": "2026-07-15T10:00:00Z",
+  "digests": "https://example.org/dedi/dedi.digests.json",
   "files": [
     {
       "registry": "public-keys",
       "url": "https://example.org/dedi/dedi.public-keys.json",
-      "digest": "sha-256:9f2c1d4e7a8b0c3d5e6f70819293a4b5c6d7e8f90a1b2c3d4e5f60718293aeba",
       "schema": "https://raw.githubusercontent.com/LF-Decentralized-Trust-labs/decentralized-directory-protocol/main/schemas/Public_key.json"
     },
     {
       "registry": "revocations",
       "url": "https://example.org/dedi/dedi.revocations.json",
-      "digest": "sha-256:5b1a2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e8f0",
       "schema": "https://raw.githubusercontent.com/LF-Decentralized-Trust-labs/decentralized-directory-protocol/main/schemas/Revoke.json"
     },
     {

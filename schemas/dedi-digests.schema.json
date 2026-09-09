@@ -1,0 +1,31 @@
+{
+  "$id": "https://raw.githubusercontent.com/LF-Decentralized-Trust-labs/decentralized-directory-protocol/main/schemas/dedi-digests.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DeDi Digests",
+  "description": "A signed document carrying the current digest of each of a publisher's DeDi files, referenced from the manifest by its digests URL. Lets the manifest stay stable while content changes: the manifest is re-issued only when keys or the registry list change; this document is re-issued on every content update. Signed by a key listed in the manifest's keys; verified like the manifest. Entries take precedence over files[].digest in the manifest. /dedi/dedi.digests.json is the RECOMMENDED location. See docs/publishing-dedi-files.md section 6.3. NOTE: the schema $id points at the mutable main branch and must be pinned to a release tag before release.",
+  "type": "object",
+  "required": ["dedi_version", "type", "domain", "updated_at", "next_update", "digests", "proof"],
+  "additionalProperties": false,
+  "properties": {
+    "dedi_version": { "type": "string" },
+    "type": { "type": "string", "const": "dedi-digests", "description": "Discriminator." },
+    "domain": { "type": "string", "description": "The publisher domain; MUST equal the manifest's domain." },
+    "updated_at": { "type": "string", "format": "date-time", "description": "When any digest last changed." },
+    "next_update": { "type": "string", "format": "date-time", "description": "After this time the document MUST be treated as stale and re-fetched." },
+    "digests": { "type": "object", "description": "Registry name → digest of that registry's current DeDi file, prefixed with the algorithm, e.g. 'sha-256:...'. A registry absent here has no digest commitment from this document.", "additionalProperties": { "type": "string" }},
+    "proof": {
+      "type": "object",
+      "description": "Detached JWS over the JCS-canonicalized document with this proof block removed, signed by a key listed in the manifest's keys.",
+      "required": ["verification_method", "canonicalization", "jws"],
+      "additionalProperties": false,
+      "properties": {
+        "verification_method": { "type": "string", "description": "MUST reference a kid in the manifest's keys." },
+        "canonicalization": {
+          "type": "string",
+          "enum": ["JCS"]
+        },
+        "jws": { "type": "string" }
+      }
+    }
+  }
+}

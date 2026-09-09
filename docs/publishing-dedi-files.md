@@ -211,6 +211,7 @@ them administrable and gives a single place to scope the HTTP headers below:
 https://example.org/.well-known/dedi.index.json            ← manifest — fixed path, normative (RFC 8615)
 https://example.org/dedi/dedi.public-keys.json       ← files — RECOMMENDED convention
 https://example.org/dedi/dedi.revocations.json
+https://example.org/dedi/dedi.digests.json           ← digests file — optional (6.3)
 ```
 
 Only the manifest's location is normative; RFC 8615 exists precisely to make a small discovery
@@ -253,7 +254,7 @@ files. It is signed, and served under the domain's TLS at the well-known path (R
 
   "files": [                                  // the registries offered — discovery + change-detection
     { "registry": "public-keys", "url": "https://example.org/dedi/dedi.public-keys.json",
-      "digest": "sha-256:9f2c1d4e7a8b0c3d5e6f70819293a4b5c6d7e8f90a1b2c3d4e5f60718293aebae",
+      "digest": "sha-256:9f2c1d4e7a8b0c3d5e6f70819293a4b5c6d7e8f90a1b2c3d4e5f60718293aeba",   // optional — or via a digests file (6.3)
       "schema": "https://raw.githubusercontent.com/LF-Decentralized-Trust-labs/decentralized-directory-protocol/main/schemas/Public_key.json" },
     { "registry": "revocations", "url": "https://example.org/dedi/dedi.revocations.json",
       "digest": "sha-256:5b1a2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e8f0",
@@ -286,12 +287,46 @@ manifest tamper-evident once it has been cached or relayed away from the origin.
 There is no separate revocation registry for *keys*: presence in `keys` **is** validity. A publisher
 manages its entire key lifecycle by editing its own well-known.
 
-### 6.3 `files[].digest`
+### 6.3 Digests
 
-The whole-file digest lets the *signed* manifest vouch for each DeDi file before it is fetched, and
-lets a server detect a change (digest moved → re-fetch). It is the only place a whole-file hash is needed;
-the file's own signature secures its internal integrity. An inline entry (6.4) carries no digest:
-the manifest's own signature covers its bytes directly.
+A digest lets a *signed* document other than the file itself vouch for the file's current bytes: a
+verifier knows which version is current before fetching, and a server detects a change without
+fetching (digest moved → re-fetch). The file's own signature secures its internal integrity; a file
+cannot vouch for its own currency. An inline entry (6.4) has no digest: the manifest's signature
+covers its bytes directly.
+
+`files[].digest` is OPTIONAL. A publisher that supplies digests does so in one of two places:
+
+- **In the manifest**, as `files[].digest` — the form shown above.
+- **In a digests file**, referenced from the manifest by the optional `digests` URL. This keeps the
+  manifest stable — it changes only when keys or the registry list change — while the digests file,
+  hosted anywhere the publisher controls (`/dedi/dedi.digests.json` RECOMMENDED), is re-issued on
+  every content change.
+
+```jsonc
+// in the manifest
+"digests": "https://example.org/dedi/dedi.digests.json",   // optional — signed pointer
+
+// /dedi/dedi.digests.json — signed by a key in the manifest's `keys`
+{
+  "dedi_version": "0.1",
+  "type": "dedi-digests",
+  "domain": "example.org",
+  "updated_at": "2026-07-08T10:00:00Z",
+  "next_update": "2026-07-09T10:00:00Z",
+  "digests": {
+    "public-keys": "sha-256:9f2c...",
+    "revocations": "sha-256:5b1a..."
+  },
+  "proof": { "verification_method": "key-1", "canonicalization": "JCS", "jws": "eyJ..." }
+}
+```
+
+The digests file is verified like the manifest: its signature is checked against a key the manifest
+lists. Where a registry's digest appears in both places, the digests file takes precedence. A registry
+with a digest in neither place carries no digest commitment. On a digest mismatch, a verifier
+re-fetches the digests file (or the manifest) before rejecting the file, since its cached copy may
+predate the change.
 
 ### 6.4 Inline registries
 
@@ -549,9 +584,9 @@ sequenceDiagram
     participant S as DeDi server
     P->>P: edit record.details, set registry.updated_at
     P->>P: re-sign file
-    P->>P: update the file's digest in the manifest, re-sign manifest
+    P->>P: update the file's digest (digests file, or manifest), re-sign it
     Note over P,S: no list, no key change
-    S->>P: crawl manifest — digest changed
+    S->>P: crawl digests file / manifest — digest changed
     S->>P: GET the changed DeDi file
     S->>S: verify, re-index
 ```

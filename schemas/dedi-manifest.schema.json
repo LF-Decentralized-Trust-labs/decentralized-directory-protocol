@@ -33,20 +33,21 @@
     },
     "updated_at": { "type": "string", "format": "date-time", "description": "When the keys or file list last actually changed." },
     "next_update": { "type": "string", "format": "date-time", "description": "How long a verifier may cache these keys before re-fetching; also the revocation-propagation bound." },
+    "digests": { "type": "string", "format": "uri", "description": "Optional URL of a signed digests document (schema dedi-digests.json) carrying per-registry digests, so the manifest need not change on every content update. Its entries take precedence over files[].digest." },
     "files": {
       "type": "array",
-      "description": "The DeDi files (registries) this publisher offers. An entry is a reference (the file is hosted at url, committed to by digest) or an inline entry (a complete DeDi file object embedded verbatim), never both. Registry names MUST be unique across entries.",
+      "description": "The DeDi files (registries) this publisher offers. An entry is a reference (the file is hosted at url, optionally committed to by a digest) or an inline entry (a complete DeDi file object embedded verbatim), never both. Registry names MUST be unique across entries.",
       "items": {
         "oneOf": [
           {
             "type": "object",
             "description": "Referenced entry: the DeDi file is hosted at url.",
-            "required": ["registry", "url", "digest"],
+            "required": ["registry", "url"],
             "additionalProperties": false,
             "properties": {
               "registry": { "type": "string", "description": "Registry name." },
               "url": { "type": "string", "format": "uri", "description": "Absolute URL where the DeDi file is hosted; may be any host the publisher controls, including one different from the manifest's own domain. Authoritative for location: filename and directory conventions are never consulted." },
-              "digest": { "type": "string", "description": "Digest of the referenced DeDi file, so this signed manifest commits to its content and changes are detectable. Prefixed algorithm, e.g. 'sha-256:...'." },
+              "digest": { "type": "string", "description": "Optional. Digest of the referenced DeDi file, so this signed manifest commits to its content and changes are detectable. Prefixed algorithm, e.g. 'sha-256:...'. May instead be supplied via the digests document referenced by the manifest's digests URL, which takes precedence." },
               "schema": {
                 "description": "Optional: the registry's schema (URL or inline), echoed for discovery/filtering without fetching the file.",
                 "oneOf": [{ "type": "string", "format": "uri" }, { "type": "object" }]

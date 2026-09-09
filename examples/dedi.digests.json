@@ -1,0 +1,16 @@
+{
+  "dedi_version": "0.1",
+  "type": "dedi-digests",
+  "domain": "example.org",
+  "updated_at": "2026-07-08T10:00:00Z",
+  "next_update": "2026-07-09T10:00:00Z",
+  "digests": {
+    "public-keys": "sha-256:9f2c1d4e7a8b0c3d5e6f70819293a4b5c6d7e8f90a1b2c3d4e5f60718293aeba",
+    "revocations": "sha-256:5b1a2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e8f0"
+  },
+  "proof": {
+    "verification_method": "key-1",
+    "canonicalization": "JCS",
+    "jws": "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..ILLUSTRATIVE_DETACHED_SIGNATURE_NOT_CRYPTOGRAPHICALLY_VALID"
+  }
+}
