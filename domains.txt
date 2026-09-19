@@ -2,3 +2,4 @@
 # An entry is a publisher domain, or the URL of another domains.txt to include.
 # head: 2026-07-21T00:00:00Z
 https://raw.githubusercontent.com/Networks-for-Humanity/fabric-onboarding/refs/heads/main/fabric.domains.txt
+https://pehchaanstage.uidai.gov.in
