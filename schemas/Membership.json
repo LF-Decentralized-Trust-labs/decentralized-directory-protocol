@@ -13,7 +13,7 @@
       "description": "Public details of the member",
       "properties": {
         "name": { "type": "string" },
-        "url": { "type": "string", "format": "url" },
+        "url": { "type": "string", "format": "uri" },
         "address": { "type": "string" },
         "publicKey": {
           "type": "string",
