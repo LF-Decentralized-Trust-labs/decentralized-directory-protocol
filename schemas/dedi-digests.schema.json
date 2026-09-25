@@ -1,5 +1,5 @@
 {
-  "$id": "https://raw.githubusercontent.com/LF-Decentralized-Trust-labs/decentralized-directory-protocol/main/schemas/dedi-digests.json",
+  "$id": "https://raw.githubusercontent.com/LF-Decentralized-Trust-labs/decentralized-directory-protocol/main/schemas/dedi-digests.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "DeDi Digests",
   "description": "A signed document carrying the current digest of each of a publisher's DeDi files, referenced from the manifest by its digests URL. Lets the manifest stay stable while content changes: the manifest is re-issued only when keys or the registry list change; this document is re-issued on every content update. Signed by a key listed in the manifest's keys; verified like the manifest. Entries take precedence over files[].digest in the manifest. /dedi/dedi.digests.json is the RECOMMENDED location. See docs/publishing-dedi-files.md section 6.3. NOTE: the schema $id points at the mutable main branch and must be pinned to a release tag before release.",
