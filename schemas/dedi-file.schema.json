@@ -1,5 +1,5 @@
 {
-  "$id": "https://raw.githubusercontent.com/LF-Decentralized-Trust-labs/decentralized-directory-protocol/main/schemas/dedi-file.json",
+  "$id": "https://raw.githubusercontent.com/LF-Decentralized-Trust-labs/decentralized-directory-protocol/main/schemas/dedi-file.schema.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "DeDi File",
   "description": "A self-contained, signed JSON document holding one registry (directory) and its records. Served as application/json; the dedi.<registry-name>.json filename and /dedi/ directory are RECOMMENDED conventions, not conformance requirements. Hosted by the publisher at any URL it controls, or embedded verbatim as an inline entry in the manifest's files[] (shape and verification unchanged; source_url is then the manifest's well-known URL); discovered, verified and served by DeDi servers. Authenticity is established by confirming publisher.key appears in the keys of the publisher's signed /.well-known/dedi.index.json. See docs/publishing-dedi-files.md. NOTE: the schema $id points at the mutable main branch and must be pinned to a release tag before release.",

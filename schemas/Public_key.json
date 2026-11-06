@@ -26,7 +26,7 @@
 	    "description": "Public details of the entity",
 	    "properties": {
 		"name": { "type": "string" },
-		"url": { "type": "string", "format": "url"},
+		"url": { "type": "string", "format": "uri"},
 		"address": { "type": "string" }
 	    },
 	    "required": ["name"],
